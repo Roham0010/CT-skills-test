@@ -44,7 +44,7 @@
 	<div class="col-md-4"></div>
 	<div class="col-md-4">
 		<table class="table table-striped">
-		  <thead> <tr> <th>#</th> <th>Name</th> <th>Quantity</th> <th>Price</th> </tr> </thead>
+		  <thead> <tr> <th>Name</th> <th>Quantity</th> <th>Price</th> <th>Total value number</th> </tr> </thead>
 		  <tbody id="product_rows">
 		  	@foreach($products as $jproduct)
 		  		@php
@@ -57,6 +57,7 @@
 		  			<td>{{ $product->name }}</td>
 		  			<td>{{ $product->quantity }}</td>
 		  			<td>{{ $product->price }}</td>
+		  			<td>{{ (((int)$product->price) * ((int)$product->quantity)) }}</td>
 
 		  		</tr>
 		  	@endforeach
@@ -71,6 +72,7 @@
 		<td>{name}</td>\
 		<td>{quantity}</td>\
 		<td>{price}</td>\
+		<td>{total}</td>\
 	</tr>"
 	function replacement(data, myString) {
 	    var res = myString;
@@ -98,7 +100,9 @@
             			$(this).parent().removeClass('has-error');
             		});
 	            	if(data.status == 'OK') {
-	            		var newProduct = replacement(data.data, templateProductRow);
+	            		product = data.data;
+	            		product['total'] = product['price'] * product['quantity'];
+	            		var newProduct = replacement(product, templateProductRow);
 	            		$('#product_rows').append(newProduct);
 	            	} else if(data.status == 'form-error') {
 	            		for (var i in data.data) {
