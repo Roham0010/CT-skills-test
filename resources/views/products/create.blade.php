@@ -46,23 +46,30 @@
 		<table class="table table-striped">
 		  <thead> <tr> <th>Name</th> <th>Quantity</th> <th>Price</th> <th>Total value number</th> </tr> </thead>
 		  <tbody id="product_rows">
+		  	@php
+		  		$allTotal = 0;
+		  	@endphp
+
 		  	@foreach($products as $jproduct)
 		  		@php
 		  			$product = json_decode($jproduct);
 		  			if(!is_object($product)) {
 		  				continue;
 		  			}
+		  			$total = (((int)$product->price) * ((int)$product->quantity));
+		  			$allTotal +=$total;
 		  		@endphp
 		  		<tr>
 		  			<td>{{ $product->name }}</td>
 		  			<td>{{ $product->quantity }}</td>
 		  			<td>{{ $product->price }}</td>
-		  			<td>{{ (((int)$product->price) * ((int)$product->quantity)) }}</td>
+		  			<td>{{ $total }}</td>
 
 		  		</tr>
 		  	@endforeach
 
 		  </tbody>
+	  		<tr><td colspan="4">Total value number: <span id="js_total">{{ $allTotal }}</span></td></tr>
 		</table>
 	</div>
 </div>
@@ -102,6 +109,8 @@
 	            	if(data.status == 'OK') {
 	            		product = data.data;
 	            		product['total'] = product['price'] * product['quantity'];
+	            		$('#js_total').html((parseInt($('#js_total').html()) + product['total']));
+
 	            		var newProduct = replacement(product, templateProductRow);
 	            		$('#product_rows').append(newProduct);
 	            	} else if(data.status == 'form-error') {
